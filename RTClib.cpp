@@ -303,6 +303,10 @@ uint8_t DS1302::begin(void) {
 	pinMode(ce, OUTPUT);
 	pinMode(sck, OUTPUT);
 	pinMode(io, INPUT);
+	write(7,0);
+	uint8_t sec = read(0);
+	sec |= (1 << 7);
+	write0(0, sec);
 	return 1;
 }
 uint8_t DS1302::read() {
