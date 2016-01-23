@@ -40,6 +40,12 @@ public:
 	uint8_t minute() const		{ return mm; }
 	uint8_t second() const		{ return ss; }
 	uint8_t dayOfWeek() const;
+	void setyear(uint16_t year) 	{ yOff = year - 2000; }
+	void setmonth(uint8_t month)	{ m = month; }
+	void setday(uint8_t day) 		{ d = day; }
+	void sethour(uint8_t hour) 		{ hh = hour%24; }
+	void setminute(uint8_t minute) 	{ mm = minute%60; }
+	void setsecond(uint8_t second) 	{ ss = second%60; }
 	// 32-bit times as seconds since 1/1/2000
 	long secondstime() const;
 	// 32-bit times as seconds since 1/1/1970
@@ -61,6 +67,23 @@ public:
 
 protected:
 	uint8_t yOff, m, d, hh, mm, ss;
+};
+
+// RTC based on the DS1302 chip connected via pins
+class DS1302 {
+public:
+	DS1302 (uint8_t ce_pin, uint8_t sck_pin, uint8_t io_pin);
+	uint8_t begin(void);
+	void adjust(const DateTime& dt);
+	uint8_t isrunning(void);
+	DateTime now();
+	uint8_t read(const uint8_t addr);
+	void write(const uint8_t addr, const uint8_t val);
+private:
+	uint8_t _read();
+	void _write(const uint8_t val);
+protected:
+	uint8_t ce, sck, io;
 };
 
 // RTC based on the DS1307 chip connected via I2C and the Wire library
