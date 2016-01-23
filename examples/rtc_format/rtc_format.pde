@@ -8,6 +8,8 @@ DS1307 rtc;
 //DS3231 rtc;
 //PCF8563 rtc;
 //PCF8583 rtc;
+//DS1302 rtc(CE_PIN,SCK_PIN,IO_PIN);
+//DS1302 rtc;// CE_PIN 4, SCK_PIN 5, IO_PIN 6 as default
 
 void setup () {
   Serial.begin(57600);

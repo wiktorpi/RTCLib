@@ -303,12 +303,13 @@ uint8_t DS1302::begin(void) {
 	pinMode(ce, OUTPUT);
 	pinMode(sck, OUTPUT);
 	pinMode(io, INPUT);
+	return 1;
 }
-uint8_t DS1302::_read() {
+uint8_t DS1302::read() {
 	pinMode(io, INPUT);
 	uint8_t value = 0;
 	for (uint8_t i = 0; i < 8; ++i) {
-		bit = digitalRead(io);
+		uint8_t bit = digitalRead(io);
 		value |= (bit << i);  // Bits are read LSB first.
 		digitalWrite(sck, HIGH);
 		digitalWrite(sck, LOW);
@@ -316,20 +317,20 @@ uint8_t DS1302::_read() {
 	return value;
 }
 
-void DS1302::_write(const uint8_t val) {
+void DS1302::write(const uint8_t val) {
 	pinMode(io, OUTPUT);
 	shiftOut(io, sck, LSBFIRST, val);
 }
 uint8_t DS1302::read(const uint8_t addr) {
-	const uint8_t cmd = (0x81 | (addr << 1))
-	_write(cmd);
-	return _read();
+	const uint8_t cmd = (0x81 | (addr << 1));
+	write(cmd);
+	return read();
 }
 
 void DS1302::write(const uint8_t addr, const uint8_t val) {
-	const uint8_t cmd = (0x80 | (addr << 1))
-	_write(cmd);
-	_write(val);
+	const uint8_t cmd = (0x80 | (addr << 1));
+	write(cmd);
+	write(val);
 }
 
 uint8_t DS1302::isrunning(void) {
@@ -337,26 +338,26 @@ uint8_t DS1302::isrunning(void) {
 	return !(ss>>7);
 }
 DateTime DS1302::now() {
-	_write(0xBF);
-	uint8_t ss = bcd2bin(_read() & 0x7F);
-	uint8_t mm = bcd2bin(_read());
-	uint8_t hh = bcd2bin(_read());
-	uint8_t d = bcd2bin(_read());
-	uint8_t m = bcd2bin(_read());
-	_read();
-	uint16_t y = bcd2bin(_read()) + 2000;
+	write(0xBF);
+	uint8_t ss = bcd2bin(read() & 0x7F);
+	uint8_t mm = bcd2bin(read());
+	uint8_t hh = bcd2bin(read());
+	uint8_t d = bcd2bin(read());
+	uint8_t m = bcd2bin(read());
+	read();
+	uint16_t y = bcd2bin(read()) + 2000;
 	return DateTime (y, m, d, hh, mm, ss);
 }
-void DS1307::adjust(const DateTime& dt) {
-	_write(0xBE);
-	_write(bin2bcd(dt.second()));
-	_write(bin2bcd(dt.minute()));
-	_write(bin2bcd(dt.hour()));
-	_write(bin2bcd(dt.day()));
-	_write(bin2bcd(dt.month()));
-	_write(bin2bcd(dt.dayOfWeek()));
-	_write(bin2bcd(dt.year() - 2000));
-	_write(0);
+void DS1302::adjust(const DateTime& dt) {
+	write(0xBE);
+	write(bin2bcd(dt.second()));
+	write(bin2bcd(dt.minute()));
+	write(bin2bcd(dt.hour()));
+	write(bin2bcd(dt.day()));
+	write(bin2bcd(dt.month()));
+	write(bin2bcd(dt.dayOfWeek()));
+	write(bin2bcd(dt.year() - 2000));
+	write(0);
 }
 // RTC_DS1307 implementation
 

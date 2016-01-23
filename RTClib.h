@@ -71,17 +71,17 @@ protected:
 
 // RTC based on the DS1302 chip connected via pins
 class DS1302 {
+private:
+	uint8_t read();
+	void write(const uint8_t val);
 public:
-	DS1302 (uint8_t ce_pin, uint8_t sck_pin, uint8_t io_pin);
+	DS1302 (uint8_t ce_pin = 4, uint8_t sck_pin = 5, uint8_t io_pin = 6);
 	uint8_t begin(void);
 	void adjust(const DateTime& dt);
 	uint8_t isrunning(void);
 	DateTime now();
 	uint8_t read(const uint8_t addr);
 	void write(const uint8_t addr, const uint8_t val);
-private:
-	uint8_t _read();
-	void _write(const uint8_t val);
 protected:
 	uint8_t ce, sck, io;
 };
