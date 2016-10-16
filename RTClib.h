@@ -10,11 +10,11 @@ public:
 	TimeDelta (uint32_t seconds =0);
 	TimeDelta (uint16_t days, uint8_t hours, uint8_t minutes, uint8_t seconds);
 	TimeDelta (const TimeDelta& copy);
-	uint16_t days() const 			{ return _sec / 86400L; }
-	uint8_t hours() const 			{ return _sec/ 3600 % 24; }
-	uint8_t minutes() const 		{ return _sec / 60 % 60; }
-	uint8_t seconds() const 		{ return _sec % 60; }
-	uint32_t totalseconds() const 	{ return _sec; }
+	uint16_t days() const			{ return _sec / 86400L; }
+	uint8_t hours() const			{ return _sec/ 3600 % 24; }
+	uint8_t minutes() const			{ return _sec / 60 % 60; }
+	uint8_t seconds() const			{ return _sec % 60; }
+	uint32_t totalseconds() const		{ return _sec; }
 
 	TimeDelta operator+(const TimeDelta& right);
 	TimeDelta operator-(const TimeDelta& right);
@@ -35,15 +35,15 @@ public:
 	DateTime (const char* sdate);
 	uint16_t year() const		{ return 2000 + yOff; }
 	uint8_t month() const		{ return m; }
-	uint8_t day() const			{ return d; }
+	uint8_t day() const		{ return d; }
 	uint8_t hour() const		{ return hh; }
 	uint8_t minute() const		{ return mm; }
 	uint8_t second() const		{ return ss; }
 	uint8_t dayOfWeek() const;
 	void setyear(uint16_t year) 	{ yOff = year - 2000; }
 	void setmonth(uint8_t month)	{ m = month; }
-	void setday(uint8_t day) 		{ d = day; }
-	void sethour(uint8_t hour) 		{ hh = hour%24; }
+	void setday(uint8_t day) 	{ d = day; }
+	void sethour(uint8_t hour) 	{ hh = hour%24; }
 	void setminute(uint8_t minute) 	{ mm = minute%60; }
 	void setsecond(uint8_t second) 	{ ss = second%60; }
 	// 32-bit times as seconds since 1/1/2000
