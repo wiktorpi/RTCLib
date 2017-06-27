@@ -476,7 +476,7 @@ double DS3231::getTemp() {
   WIRE.endTransmission();
   WIRE.requestFrom(DS3231_ADDRESS, 2);
   temp = (double)WIRE.read();
-  temp += (double)0.25*WIRE.read();
+  temp += (double)0.25*(WIRE.read() >> 6);
   return temp;
 }
 
