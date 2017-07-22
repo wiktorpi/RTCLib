@@ -145,7 +145,7 @@ class PCF8563 {
 	uint8_t begin(void);
 	DateTime now();
 	uint8_t isrunning(void);
-  uint8_t isvalid(void);
+	uint8_t isvalid(void);
 	void adjust(const DateTime& dt);
 	void off_alarm(void);
 	void on_alarm(void);
