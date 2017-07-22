@@ -664,15 +664,18 @@ void PCF8563::adjust(const DateTime& dt)
   begin(); // re set the control/status register to 0x04
 }
 uint8_t PCF8563::isrunning(void){
-  WIRE.beginTransmission(address);
-  WIRE.write(0);
-  WIRE.endTransmission();
+  Wire.beginTransmission(address);
+  Wire.write(0);
+  Wire.endTransmission();
 
-  WIRE.requestFrom(address, 2);
+  Wire.requestFrom(address, 3);
   
   status1 = Wire.read();
   status2 = Wire.read();
-  return !(bitRead(status1,5));
+	
+  // Get VL bit to ensure that clock integrity is garanteed
+  uint8_t VL_seconds = Wire.read();
+  return !(bitRead(VL_seconds,7));
 }
 
 //Get the alarm at 0x09 adress
