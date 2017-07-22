@@ -148,7 +148,7 @@ DateTime::DateTime (const char* date, const char* time) {
 	// sample input: date = "Dec 26 2009", time = "12:34:56"
 	// or date="26-12-2009"
 	yOff = conv2d(date + 9);
-	// Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec 
+	// Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
 	d = conv2d(date + 4);
 	switch (date[0]) {
 		case 'J': m = date[1] == 'a' ? 1 : m = date[2] == 'n' ? 6 : 7; break;
@@ -408,7 +408,7 @@ DateTime DS1307::now() {
   uint8_t d = bcd2bin(WIRE.read());
   uint8_t m = bcd2bin(WIRE.read());
   uint16_t y = bcd2bin(WIRE.read()) + 2000;
-  
+
   return DateTime (y, m, d, hh, mm, ss);
 }
 
@@ -551,7 +551,7 @@ void PCF8583::adjust(const DateTime& dt)
   Wire.write(2000 >> 8);
   Wire.write(2000 & 0x00ff);
   Wire.endTransmission();
-  
+
   begin(); // re set the control/status register to 0x04
 
 }
@@ -633,7 +633,7 @@ DateTime PCF8563::now()
   Wire.write(0x00);
   Wire.endTransmission();
   Wire.requestFrom(address, 9);
-  
+
   status1 = Wire.read();
   status2 = Wire.read();
   uint8_t second = bcd2bin(Wire.read() & 0x7F);
@@ -660,7 +660,7 @@ void PCF8563::adjust(const DateTime& dt)
   Wire.write(bin2bcd(dt.month()) | 0x80);	// Month (1-12, century bit (bit 7) = 1)
   Wire.write(bin2bcd(dt.year() % 100));	  // Year (00-99)
   Wire.endTransmission();
-  
+
   begin(); // re set the control/status register to 0x04
 }
 uint8_t PCF8563::isrunning(void){
@@ -668,12 +668,22 @@ uint8_t PCF8563::isrunning(void){
   Wire.write(0);
   Wire.endTransmission();
 
-  Wire.requestFrom(address, 3);
-  
+  Wire.requestFrom(address, 2);
+
   status1 = Wire.read();
   status2 = Wire.read();
-	
-  // Get VL bit to ensure that clock integrity is garanteed
+  return !(bitRead(status1,5));
+}
+
+uint8_t PCF8563::isvalid(void) {
+  Wire.beginTransmission(address);
+  Wire.write(0);
+  Wire.endTransmission();
+
+  Wire.requestFrom(address, 3);
+
+  status1 = Wire.read();
+  status2 = Wire.read();
   uint8_t VL_seconds = Wire.read();
   return !(bitRead(VL_seconds,7));
 }

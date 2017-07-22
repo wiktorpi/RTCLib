@@ -126,7 +126,7 @@ class PCF8583 {
   public:
 	PCF8583();
 	PCF8583(int device_address);
-	uint8_t begin(void);	
+	uint8_t begin(void);
 	DateTime now();
 	uint8_t isrunning(void);
 	void adjust(const DateTime& dt);
@@ -142,9 +142,10 @@ class PCF8563 {
   public:
 	PCF8563();
 	PCF8563(int device_address);
-	uint8_t begin(void);	
+	uint8_t begin(void);
 	DateTime now();
 	uint8_t isrunning(void);
+  uint8_t isvalid(void);
 	void adjust(const DateTime& dt);
 	void off_alarm(void);
 	void on_alarm(void);
@@ -161,7 +162,7 @@ public:
 	void begin(const DateTime& dt) { adjust(dt);ok = 1; }
 	void adjust(const DateTime& dt);
 	DateTime now();
-	uint8_t begin(void);	
+	uint8_t begin(void);
 	uint8_t isrunning(void);
 
 protected:
