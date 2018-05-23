@@ -58,6 +58,8 @@ public:
 	void sethour(uint8_t hour) 	{ hh = hour%24; }
 	void setminute(uint8_t minute) 	{ mm = minute%60; }
 	void setsecond(uint8_t second) 	{ ss = second%60; }
+	void SetTime(const char* time);
+	void SetDate(const char* date);
 	// 32-bit times as seconds since 1/1/2000
 	long secondstime() const;
 	// 32-bit times as seconds since 1/1/1970
