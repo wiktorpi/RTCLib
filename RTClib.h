@@ -51,7 +51,7 @@ public:
 	uint8_t hour() const		{ return hh; }
 	uint8_t minute() const		{ return mm; }
 	uint8_t second() const		{ return ss; }
-	uint8_t dayOfWeek() const;
+	uint8_t dayOfTheWeek() const;
 	void setyear(uint16_t year) 	{ yOff = year - 2000; }
 	void setmonth(uint8_t month)	{ m = month; }
 	void setday(uint8_t day) 	{ d = day; }
