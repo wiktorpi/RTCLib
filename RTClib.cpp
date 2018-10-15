@@ -368,7 +368,7 @@ void DS1302::adjust(const DateTime& dt) {
 	write(bin2bcd(dt.hour()));
 	write(bin2bcd(dt.day()));
 	write(bin2bcd(dt.month()));
-	write(bin2bcd(dt.dayOfWeek()));
+	write(bin2bcd(dt.dayOfTheWeek()));
 	write(bin2bcd(dt.year() - 2000));
 	write(0);
 }
@@ -552,7 +552,7 @@ void PCF8583::adjust(const DateTime& dt)
   Wire.write(bin2bcd(dt.minute()));
   Wire.write(bin2bcd(dt.hour()));
   Wire.write(((byte)(dt.year() - 2000) << 6) | bin2bcd(dt.day()));
-  Wire.write((dt.dayOfWeek() << 5) | (bin2bcd(dt.month()) & 0x1f));
+  Wire.write((dt.dayOfTheWeek() << 5) | (bin2bcd(dt.month()) & 0x1f));
   Wire.endTransmission();
 
   Wire.beginTransmission(address);
@@ -665,7 +665,7 @@ void PCF8563::adjust(const DateTime& dt)
   Wire.write(bin2bcd(dt.minute()));		  // Minute (0-59)
   Wire.write(bin2bcd(dt.hour()));			// Hour (0-23)
   Wire.write(bin2bcd(dt.day()));			 // Day (1-31)
-  Wire.write(bin2bcd(dt.dayOfWeek()));	   // Weekday (0-6 = Sunday-Saturday)
+  Wire.write(bin2bcd(dt.dayOfTheWeek()));	   // Weekday (0-6 = Sunday-Saturday)
   Wire.write(bin2bcd(dt.month()) | 0x80);	// Month (1-12, century bit (bit 7) = 1)
   Wire.write(bin2bcd(dt.year() % 100));	  // Year (00-99)
   Wire.endTransmission();
@@ -719,7 +719,7 @@ void PCF8563::set_alarm(const DateTime &dt, struct alarm_flags flags)
   byte minute    = bin2bcd(dt.minute());
   byte hour      = bin2bcd(dt.hour());
   byte day       = bin2bcd(dt.day());
-  byte dayOfWeek = bin2bcd(dt.month());
+  byte dayOfTheWeek = bin2bcd(dt.month());
 
   if( !flags.minute)
     minute |= PCF8563_ALARM_REG_OFF;
@@ -731,14 +731,14 @@ void PCF8563::set_alarm(const DateTime &dt, struct alarm_flags flags)
     day |= PCF8563_ALARM_REG_OFF;
 
   if( !flags.wday)
-    dayOfWeek |= PCF8563_ALARM_REG_OFF;
+    dayOfTheWeek |= PCF8563_ALARM_REG_OFF;
 
   Wire.beginTransmission(address);
   Wire.write(0x09); // Set the register pointer to (0x09)
   Wire.write(minute);
   Wire.write(hour);
   Wire.write(day);
-  Wire.write(dayOfWeek);
+  Wire.write(dayOfTheWeek);
   Wire.endTransmission();
 }
 
