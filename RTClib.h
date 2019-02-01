@@ -86,6 +86,18 @@ protected:
 // RTC based on the DS1302 chip connected via pins
 class DS1302 {
 private:
+	//RAII class for data transferring
+	class TransferHelper {
+		public:
+			TransferHelper(uint8_t ce_pin, uint8_t sck_pin);
+			~TransferHelper();
+		protected:
+			uint8_t ce, sck;
+
+			const unsigned int ce_to_sck_setup = 4;
+			const unsigned int ce_inactive_time = 4;
+	};
+
 	uint8_t read();
 	void write(const uint8_t val);
 public:

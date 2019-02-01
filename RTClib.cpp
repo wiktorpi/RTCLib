@@ -303,6 +303,21 @@ TimeDelta TimeDelta::operator-(const TimeDelta& right) {
 ////////////////////////////////////////////////////////////////////////////////
 
 // RTC_DS1302 implementation
+
+DS1302::TransferHelper::TransferHelper(uint8_t ce_pin, uint8_t sck_pin) {
+	ce = ce_pin;
+	sck = sck_pin;
+
+	digitalWrite(sck, LOW);
+  digitalWrite(ce, HIGH);
+
+	delayMicroseconds(ce_to_sck_setup);
+}
+DS1302::TransferHelper::~TransferHelper() {
+	digitalWrite(ce, LOW);
+
+	delayMicroseconds(ce_inactive_time);
+}
 DS1302:: DS1302 (uint8_t ce_pin, uint8_t sck_pin, uint8_t io_pin) {
 	ce = ce_pin;
 	sck = sck_pin;
@@ -335,12 +350,16 @@ void DS1302::write(const uint8_t val) {
 	shiftOut(io, sck, LSBFIRST, val);
 }
 uint8_t DS1302::read(const uint8_t addr) {
+	TransferHelper data_transfer(ce, sck);
+
 	const uint8_t cmd = (0x81 | (addr << 1));
 	write(cmd);
 	return read();
 }
 
 void DS1302::write(const uint8_t addr, const uint8_t val) {
+	TransferHelper data_transfer(ce, sck);
+
 	const uint8_t cmd = (0x80 | (addr << 1));
 	write(cmd);
 	write(val);
@@ -351,6 +370,8 @@ uint8_t DS1302::isrunning(void) {
 	return !(ss>>7);
 }
 DateTime DS1302::now() {
+	TransferHelper data_transfer(ce, sck);
+
 	write(0xBF);
 	uint8_t ss = bcd2bin(read() & 0x7F);
 	uint8_t mm = bcd2bin(read());
@@ -362,6 +383,8 @@ DateTime DS1302::now() {
 	return DateTime (y, m, d, hh, mm, ss);
 }
 void DS1302::adjust(const DateTime& dt) {
+	TransferHelper data_transfer(ce, sck);
+
 	write(0xBE);
 	write(bin2bcd(dt.second()));
 	write(bin2bcd(dt.minute()));
