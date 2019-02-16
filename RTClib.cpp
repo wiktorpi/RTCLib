@@ -329,7 +329,7 @@ uint8_t DS1302::begin(void) {
 	pinMode(io, INPUT);
 	write(7,0);
 	uint8_t sec = read(0);
-	sec |= (1 << 7);
+	sec &= 0x7F;
 	write(0, sec);
 	return 1;
 }
