@@ -75,9 +75,9 @@ public:
 	unsigned char operator <= (const DateTime &date) const;
 	unsigned char operator >= (const DateTime &date) const;
 
-	DateTime operator + (const TimeDelta& delta);
-	DateTime operator - (const TimeDelta& delta);
-	TimeDelta operator - (const DateTime& right);
+	DateTime operator + (const TimeDelta& delta) const;
+	DateTime operator - (const TimeDelta& delta) const;
+	TimeDelta operator - (const DateTime& right) const;
 
 protected:
 	uint8_t yOff, m, d, hh, mm, ss;

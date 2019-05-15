@@ -237,13 +237,13 @@ void DateTime::SetDate(const char* date){
 	}
 }
 
-DateTime DateTime::operator + (const TimeDelta& delta) {
+DateTime DateTime::operator + (const TimeDelta& delta) const {
 	return DateTime(unixtime() + delta.totalseconds());
 }
-DateTime DateTime::operator - (const TimeDelta& delta) {
+DateTime DateTime::operator - (const TimeDelta& delta) const {
 	return DateTime(unixtime() - delta.totalseconds());
 }
-TimeDelta DateTime::operator - (const DateTime& right) {
+TimeDelta DateTime::operator - (const DateTime& right) const {
 	return TimeDelta(unixtime() - right.unixtime());
 }
 
