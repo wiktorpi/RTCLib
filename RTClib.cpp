@@ -237,13 +237,13 @@ void DateTime::SetDate(const char* date){
 	}
 }
 
-DateTime DateTime::operator + (const TimeDelta& delta) {
+DateTime DateTime::operator + (const TimeDelta& delta) const {
 	return DateTime(unixtime() + delta.totalseconds());
 }
-DateTime DateTime::operator - (const TimeDelta& delta) {
+DateTime DateTime::operator - (const TimeDelta& delta) const {
 	return DateTime(unixtime() - delta.totalseconds());
 }
-TimeDelta DateTime::operator - (const DateTime& right) {
+TimeDelta DateTime::operator - (const DateTime& right) const {
 	return TimeDelta(unixtime() - right.unixtime());
 }
 
@@ -272,11 +272,11 @@ char* DateTime::format(char* ret){
 		if(ret[i] == 'Y'&& ret[i+3] == 'Y'){
 			ret[i] = '2';
 			ret[i+1] = '0';
-			ret[i+2] = '0'+yOff/10;
+			ret[i+2] = '0'+(yOff/10)%10;
 			ret[i+3] = '0'+yOff%10;
 		}else
 		if(ret[i] == 'Y'&& ret[i+1] == 'Y'){
-			ret[i] = '0'+yOff/10;
+			ret[i] = '0'+(yOff/10)%10;
 			ret[i+1] = '0'+yOff%10;
 		}
 
