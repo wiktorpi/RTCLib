@@ -64,7 +64,7 @@ class DateTime {
         long secondstime() const;
         // 32-bit times as seconds since 1/1/1970
         uint32_t unixtime() const;
-        unsigned char equals(const char* sdate) const;//DD-MM-YYYY hh:mm:ss
+        unsigned char equals(const char* sdate) const; // DD-MM-YYYY hh:mm:ss
         unsigned char equals(const DateTime &date) const;
         unsigned char operator== (const char *sdate) const { return equals(sdate); }
         unsigned char operator== (const DateTime &date) const { return equals(date); }
@@ -86,7 +86,7 @@ class DateTime {
 // RTC based on the DS1302 chip connected via pins
 class DS1302 {
     private:
-        //RAII class for data transferring
+        // RAII class for data transferring
         class TransferHelper {
             public:
                 TransferHelper(uint8_t ce_pin, uint8_t sck_pin);

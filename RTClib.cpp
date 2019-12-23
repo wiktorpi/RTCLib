@@ -301,6 +301,7 @@ char* DateTime::format(char* ret) {
 }
 
 char* DateTime::toStr() {
+    // Format: "YYYY/MM/DD hh:mm:ss"
     static char str[20] = "20";
     uint8_t t;
     for (uint8_t i = 2; i < 19; i++) {
@@ -570,7 +571,7 @@ PCF8583::PCF8583() {
 
 // initialization
 uint8_t PCF8583::begin() {
-    _write(address, 0x00, 0x04);// Set alarm on int\ will turn to vcc
+    _write(address, 0x00, 0x04); // Set alarm on int\ will turn to vcc
     return 1;
 }
 
@@ -636,7 +637,7 @@ uint8_t PCF8583::isrunning() {
     return !(ss>>7);
 }
 
-//Get the alarm at 0x09 adress
+// Get the alarm at 0x09 adress
 DateTime PCF8583::get_alarm() {
     Wire.beginTransmission(address);
     Wire.write(0x0A); // Set the register pointer to (0x0A)
@@ -658,7 +659,7 @@ DateTime PCF8583::get_alarm() {
     return DateTime(2000, 01, day, hour, minute, second);
 }
 
-//Set a daily alarm
+// et a daily alarm
 void PCF8583::set_alarm(const DateTime& dt) {
     Wire.beginTransmission(address);
     Wire.write(0x08);
@@ -759,7 +760,7 @@ uint8_t PCF8563::isvalid() {
     return !(bitRead(VL_seconds, 7));
 }
 
-//Get the alarm at 0x09 adress
+// Get the alarm at 0x09 adress
 DateTime PCF8563::get_alarm() {
     Wire.beginTransmission(address);
     Wire.write(0x09); // Set the register pointer to (0x0A)
@@ -774,7 +775,7 @@ DateTime PCF8563::get_alarm() {
     return DateTime(0, wday, day, hour, minute, 0);
 }
 
-//Set a daily alarm
+// Set a daily alarm
 void PCF8563::set_alarm(const DateTime &dt, struct alarm_flags flags) {
     byte minute       = bin2bcd(dt.minute());
     byte hour         = bin2bcd(dt.hour());
@@ -803,7 +804,7 @@ void PCF8563::set_alarm(const DateTime &dt, struct alarm_flags flags) {
 }
 
 void PCF8563::off_alarm() {
-    //set status2 AF val to zero to reset alarm
+    // set status2 AF val to zero to reset alarm
     status2 &= ~PCF8563_ALARM_AF;
     Wire.beginTransmission(address);
     Wire.write(0x01);
@@ -812,9 +813,9 @@ void PCF8563::off_alarm() {
 }
 
 void PCF8563::on_alarm() {
-    //set status2 AF val to zero
+    // set status2 AF val to zero
     status2 &= ~PCF8563_ALARM_AF;
-    //enable the interrupt
+    // enable the interrupt
     status2 |= PCF8563_ALARM_AIE;
     Wire.beginTransmission(address); // Issue I2C start signal
     Wire.write(0x01);
