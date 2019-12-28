@@ -284,7 +284,7 @@ char* DateTime::format(char* ret) {
             ret[i + 1] = '0' + m % 10;
         }
 
-        if (ret[i] == 'Y' && ret[i + 3] == 'Y') {
+        if (ret[i] == 'Y') {
             if (ret[i + 3] == 'Y') {
                 ret[i] = '2';
                 ret[i + 1] = '0';
