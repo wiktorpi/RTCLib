@@ -1,7 +1,6 @@
 // Date and time functions using just software, based on millis() & timer
 
-#include <Wire.h>
-#include "RTClib.h"
+#include <RTClib.h>
 
 RTC_Millis rtc;
 
@@ -14,15 +13,15 @@ void setup() {
 void loop() {
   DateTime now = rtc.now();
 
-  Serial.println(now.toStr());
+  Serial.println(now.tostr());
 
   Serial.print(" seconds since 1970: ");
   Serial.println(now.unixtime());
 
   // calculate a date which is 7 days and 30 seconds into the future
-  DateTime future(now + TimeDelta(7 * 86400L + 30));
+  DateTime future(now + (7 * 86400L + 30));
 
-  Serial.println(future.toStr());
+  Serial.println(future.tostr());
 
   Serial.println();
   delay(3000);

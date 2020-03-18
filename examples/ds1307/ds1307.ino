@@ -1,7 +1,7 @@
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
 
 #include <Wire.h>
-#include "RTClib.h"
+#include <RTClib.h>
 
 DS1307 rtc;
 
@@ -24,7 +24,7 @@ void setup () {
 void loop () {
   DateTime now = rtc.now();
 
-  Serial.println(now.toStr());
+  Serial.println(now.tostr());
 
   Serial.print(" since midnight 1/1/1970 = ");
   Serial.print(now.unixtime());
@@ -33,11 +33,16 @@ void loop () {
   Serial.println("d");
 
   // calculate a date which is 7 days and 30 seconds into the future
-  DateTime future(now + TimeDelta(7 * 86400L + 30));
+  DateTime future(now + (7 * 86400L + 30));
 
   Serial.print(" now + 7d + 30s: ");
-  Serial.println(future.toStr());
+  Serial.println(future.tostr());
 
+  // calculate a date which is 30 days before
+  DateTime past(now - TimeDelta(30 * 86400L));
+
+  Serial.print(" now - 30d: ");
+  Serial.println(past.tostr());
   Serial.println();
   delay(3000);
 }

@@ -1,5 +1,5 @@
-#include "RTClib.h"
 #include <Wire.h>
+#include <RTClib.h>
 
 PCF8563 rtc;
 DateTime alarm_l;
@@ -15,11 +15,11 @@ void setup() {
 
   if (!rtc.isrunning()) {
     Serial.println("RTC is NOT running!");
-    //rtc.adjust(DateTime(__DATE__, __TIME__));
+    rtc.adjust(DateTime(__DATE__, __TIME__));
   }
   else {
     Serial.println("RTC OK");
-    DateTime now = DateTime(2017, 4, 2, 23, 59, 0);
+    DateTime now = DateTime(2020, 4, 1, 12, 00, 0);
     rtc.adjust(now);
 
     setAlarm(1);
@@ -48,6 +48,6 @@ void setAlarm(int value) {
   Serial.print("Setting alarm: ");
   strncpy(buf, "DD hh:mm MM", 100);
   Serial.println(alarm.format(buf));
-  rtc.set_alarm(alarm, {AE_M, 0, 0, 0});
+  rtc.set_alarm(alarm, {1, 0, 0, 0});
   rtc.on_alarm();
 }

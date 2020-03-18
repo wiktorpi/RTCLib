@@ -1,6 +1,6 @@
 // Date and time functions using a DS1302 RTC
 
-#include "RTClib.h"
+#include <RTClib.h>
 
 // Init rtc object
 //   DS1302 rtc;
@@ -12,7 +12,7 @@
 DS1302 rtc;
 //DS1302 rtc(8, 6, 7);
 
-void setup () {
+void setup() {
   Serial.begin(9600);
   rtc.begin();
 
@@ -26,7 +26,7 @@ void setup () {
 void loop () {
   DateTime now = rtc.now();
 
-  Serial.println(now.toStr());
+  Serial.println(now.tostr());
 
   Serial.print(" since midnight 1970/01/01 = ");
   Serial.print(now.unixtime());
@@ -35,10 +35,16 @@ void loop () {
   Serial.println("d");
 
   // calculate a date which is 7 days and 30 seconds into the future
-  DateTime future(now + TimeDelta(7 * 86400L + 30));
+  DateTime future(now + (7 * 86400L + 30));
 
   Serial.print(" now + 7d + 30s: ");
-  Serial.println(future.toStr());
+  Serial.println(future.tostr());
+
+  // calculate a date which is 30 days before
+  DateTime past(now - TimeDelta(30 * 86400L));
+
+  Serial.print(" now - 30d: ");
+  Serial.println(past.tostr());
 
   Serial.println();
   delay(3000);
