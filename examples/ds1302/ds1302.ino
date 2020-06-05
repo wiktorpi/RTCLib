@@ -12,6 +12,9 @@
 DS1302 rtc;
 //DS1302 rtc(8, 6, 7);
 
+// buffer for DateTime.tostr
+char buf[20];
+
 void setup() {
   Serial.begin(9600);
   rtc.begin();
@@ -26,7 +29,7 @@ void setup() {
 void loop () {
   DateTime now = rtc.now();
 
-  Serial.println(now.tostr());
+  Serial.println(now.tostr(buf));
 
   Serial.print(" since midnight 1970/01/01 = ");
   Serial.print(now.unixtime());
@@ -38,13 +41,13 @@ void loop () {
   DateTime future(now + (7 * 86400L + 30));
 
   Serial.print(" now + 7d + 30s: ");
-  Serial.println(future.tostr());
+  Serial.println(future.tostr(buf));
 
   // calculate a date which is 30 days before
   DateTime past(now - TimeDelta(30 * 86400L));
 
   Serial.print(" now - 30d: ");
-  Serial.println(past.tostr());
+  Serial.println(past.tostr(buf));
 
   Serial.println();
   delay(3000);

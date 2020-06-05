@@ -4,6 +4,9 @@
 
 RTC_Millis rtc;
 
+// buffer for DateTime.tostr
+char buf[20];
+
 void setup() {
   Serial.begin(9600);
   // following line sets the RTC to the date & time this sketch was compiled
@@ -13,7 +16,7 @@ void setup() {
 void loop() {
   DateTime now = rtc.now();
 
-  Serial.println(now.tostr());
+  Serial.println(now.tostr(buf));
 
   Serial.print(" seconds since 1970: ");
   Serial.println(now.unixtime());
@@ -21,7 +24,7 @@ void loop() {
   // calculate a date which is 7 days and 30 seconds into the future
   DateTime future(now + (7 * 86400L + 30));
 
-  Serial.println(future.tostr());
+  Serial.println(future.tostr(buf));
 
   Serial.println();
   delay(3000);

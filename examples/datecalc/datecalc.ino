@@ -3,10 +3,13 @@
 // #include <Wire.h>
 #include <RTClib.h>
 
+// buffer for DateTime.tostr
+char buf[20];
+
 void showDate(const char* txt, const DateTime& dt) {
   Serial.print(txt);
   Serial.print(' ');
-  Serial.print(dt.tostr());
+  Serial.print(dt.tostr(buf));
 
   Serial.print(" = ");
   Serial.print(dt.unixtime());
