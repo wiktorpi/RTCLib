@@ -23,8 +23,8 @@
   #define WIRE Wire1
 #endif
 
-#define DS1302_RAMSIZE 31 // 31 bytes
-#define DS1307_RAMSIZE 56 // 56 bytes
+#define DS1302_RAMSIZE 31 // bytes
+#define DS1307_RAMSIZE 56 // bytes
 
 #define SECONDS_PER_DAY 86400L
 #define SECONDS_FROM_1970_TO_2000 946684800L
@@ -41,7 +41,7 @@ struct alarm_flags {
 // TODO: handle negative delta
 class TimeDelta {
 public:
-    TimeDelta(uint32_t seconds = 0);
+    TimeDelta(uint32_t seconds = 0, bool neg = false);
     TimeDelta(uint16_t days, uint8_t hours, uint8_t minutes, uint8_t seconds);
     TimeDelta(const TimeDelta& copy);
     uint16_t days() const { return _sec / 86400L; }
@@ -57,14 +57,14 @@ public:
     bool operator>=(const TimeDelta& td) const;
     bool operator<=(const TimeDelta& td) const;
 
-    TimeDelta operator+(int32_t t) const;
+    TimeDelta operator+(uint32_t t) const;
     TimeDelta operator+(const TimeDelta& td) const;
-    TimeDelta operator-(int32_t t) const;
+    TimeDelta operator-(uint32_t t) const;
     TimeDelta operator-(const TimeDelta& td) const;
 
-    TimeDelta& operator+=(int32_t t);
+    TimeDelta& operator+=(uint32_t t);
     TimeDelta& operator+=(const TimeDelta& td);
-    TimeDelta& operator-=(int32_t t);
+    TimeDelta& operator-=(uint32_t t);
     TimeDelta& operator-=(const TimeDelta& td);
 
 protected:
@@ -75,7 +75,7 @@ protected:
 class DateTime {
 public:
     char* format(char* ret);
-    char* tostr();
+    char* tostr(char* charr);
     DateTime(uint32_t t = 0);
     DateTime(uint16_t year, uint8_t month, uint8_t day,
              uint8_t hour = 0, uint8_t min = 0, uint8_t sec = 0);
@@ -98,7 +98,8 @@ public:
     void setminute(uint8_t minute) { mm = minute % 60; }
     void setsecond(uint8_t second) { ss = second % 60; }
     // 32-bit UNIX timestamp
-    // An uint32_t should be able to store up to 2106, which is beyond most chip's time range 2099
+    // An uint32_t should be able to store up to 2106,
+    // which is beyond most chip's upper bound 2099
     void setunixtime(uint32_t t);
     uint32_t unixtime() const;
 
@@ -111,15 +112,15 @@ public:
     bool operator<=(const DateTime& date) const;
     bool operator>=(const DateTime& date) const;
 
-    DateTime operator+(int32_t t) const;
+    DateTime operator+(uint32_t t) const;
     DateTime operator+(const TimeDelta& delta) const;
-    DateTime operator-(int32_t t) const;
+    DateTime operator-(uint32_t t) const;
     DateTime operator-(const TimeDelta& delta) const;
     TimeDelta operator-(const DateTime& date) const;
 
-    DateTime& operator+=(int32_t t);
+    DateTime& operator+=(uint32_t t);
     DateTime& operator+=(const TimeDelta& delta);
-    DateTime& operator-=(int32_t t);
+    DateTime& operator-=(uint32_t t);
     DateTime& operator-=(const TimeDelta& delta);
 
 protected:
@@ -130,15 +131,15 @@ protected:
 class DS1302 {
     // RAII class for data transferring
     class TransferHelper {
-        public:
-            TransferHelper(uint8_t ce_pin, uint8_t sck_pin);
-            ~TransferHelper();
+    public:
+        TransferHelper(uint8_t ce_pin, uint8_t sck_pin);
+        ~TransferHelper();
 
-        protected:
-            uint8_t ce, sck;
+    protected:
+        uint8_t ce, sck;
 
-            const static uint8_t ce_to_sck_setup = 4;
-            const static uint8_t ce_inactive_time = 4;
+        const static uint8_t ce_to_sck_setup = 4;
+        const static uint8_t ce_inactive_time = 4;
     };
 
     uint8_t read();
@@ -148,9 +149,10 @@ public:
     DS1302(uint8_t ce_pin = 4, uint8_t sck_pin = 5, uint8_t io_pin = 6);
     uint8_t read(uint8_t addr);
     void write(uint8_t addr, uint8_t val);
-    DateTime now();
+
+    void begin();
     uint8_t isrunning();
-    uint8_t begin();
+    DateTime now();
     void adjust(const DateTime& dt);
     uint8_t readram(uint8_t addr) const;
     void writeram(uint8_t addr, uint8_t val) const;
@@ -227,12 +229,10 @@ class RTC_Millis {
 public:
     void begin();
     void begin(const DateTime& dt);
+    void stop();
     void adjust(const DateTime& dt);
     DateTime now();
-    void begin();
     bool isrunning();
-    void halt();
-    void resume();
 
 protected:
     uint32_t offset;

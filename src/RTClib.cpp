@@ -311,35 +311,25 @@ char* DateTime::format(char* ret) {
     return ret;
 }
 
-char* DateTime::tostr() {
-    // Format: "20YY/MM/DD hh:mm:ss"
-    static char str[20] = "20";
-    uint8_t t;
-    for (uint8_t i = 2; i < 19; i++) {
-        switch (i) {
-            case 4:
-            case 7: str[i] = '/'; break;
-            case 10: str[i] = ' '; break;
-            case 13:
-            case 16: str[i] = ':'; break;
-            case 2: t = yOff; break;
-            case 5: t = m; break;
-            case 8: t = d; break;
-            case 11: t = hh; break;
-            case 14: t = mm; break;
-            case 17: t = ss; break;
-            default:
-                str[i - 1] = '0' + t / 10;
-                str[i] = '0' + t % 10;
-        }
-    }
+char* DateTime::tostr(char* charr) {
+    charr[0] = '2'; charr[1] = '0';
+    charr[4] = charr[7] = '/';
+    charr[13] = charr[16] = ':';
+    charr[10] = ' ';
+    charr[2] = '0' + yOff / 10; charr[3] = '0' + yOff % 10;
+    charr[5] = '0' + m / 10; charr[6] = '0' + m % 10;
+    charr[8] = '0' + d / 10; charr[9] = '0' + d % 10;
+    charr[11] = '0' + hh / 10; charr[12] = '0' + hh % 10;
+    charr[14] = '0' + mm / 10; charr[15] = '0' + mm % 10;
+    charr[17] = '0' + ss / 10; charr[18] = '0' + ss % 10;
+    charr[19] = '\0';
 
-    return str;
+    return charr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // TimeDelta implementation
-TimeDelta::TimeDelta (uint32_t seconds) {
+TimeDelta::TimeDelta (uint32_t seconds, bool neg) {
     _sec = seconds;
 }
 
@@ -425,7 +415,7 @@ void DS1302::write(uint8_t val) {
     shiftOut(io, sck, LSBFIRST, val);
 }
 
-uint8_t DS1302::begin() {
+void DS1302::begin() {
     pinMode(ce, OUTPUT);
     pinMode(sck, OUTPUT);
     pinMode(io, INPUT);
@@ -433,7 +423,6 @@ uint8_t DS1302::begin() {
     uint8_t sec = read(0);
     sec &= 0x7F;
     write(0, sec);
-    return 1;
 }
 
 uint8_t DS1302::read(uint8_t addr) {

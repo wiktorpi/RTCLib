@@ -28,8 +28,7 @@ second	KEYWORD2
 dayOfWeek	KEYWORD2
 unixtime	KEYWORD2
 begin	KEYWORD2
-halt	KEYWORD2
-resume	KEYWORD2
+stop	KEYWORD2
 adjust	KEYWORD2
 isrunning	KEYWORD2
 now	KEYWORD2
