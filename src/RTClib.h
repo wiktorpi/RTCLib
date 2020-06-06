@@ -172,6 +172,10 @@ public:
     DateTime now();
     uint8_t read(uint8_t addr);
     void write(uint8_t addr, uint8_t val);
+    uint8_t readram(uint8_t addr);
+    void writeram(uint8_t addr, uint8_t val);
+    uint8_t* getram(uint8_t* arr, uint8_t len);
+    void putram(const uint8_t* arr, uint8_t len);
 };
 
 class DS3231 {

@@ -17,6 +17,8 @@
 #define DS3231_ADDRESS            0x68
 
 // registers
+#define DS1307_TIME_ADDR          0x00
+#define DS1307_RAM_ADDR           0x08
 #define DS3231_TIME_ADDR          0x00
 #define DS3231_ALARM_1_ADDR       0x07
 #define DS3231_ALARM_2_ADDR       0x0B
@@ -565,6 +567,84 @@ DateTime DS1307::now() {
     uint8_t yOff = bcd2bin(WIRE.read());
 
     return DateTime(yOff + 2000, m, d, hh, mm, ss);
+}
+
+uint8_t DS1307::readram(uint8_t addr) {
+    return _read(DS1307_ADDRESS, DS1307_RAM_ADDR + addr % DS1307_RAMSIZE);
+}
+
+void DS1307::writeram(uint8_t addr, uint8_t val) {
+    _write(DS1307_ADDRESS, DS1307_RAM_ADDR + addr % DS1307_RAMSIZE, val);
+}
+
+uint8_t* DS1307::getram(uint8_t* arr, uint8_t len) {
+    // Because Wire's internal buffer only has 32 bytes (BUFFER_LENGTH)
+    // we need to read twice
+    static const uint8_t separator = BUFFER_LENGTH - 1;
+
+    if (len > DS1307_RAMSIZE) {
+        // Limit to avoid undefined operation
+        len = DS1307_RAMSIZE;
+    }
+
+    // how many bytes to write first
+    uint8_t first_wave = max(len, separator);
+
+    WIRE.beginTransmission(DS1307_ADDRESS);
+    WIRE.write(DS1307_RAM_ADDR);
+    WIRE.endTransmission();
+
+    WIRE.requestFrom(DS1307_ADDRESS, first_wave);
+    for(int i = 0; i < first_wave; i++) {
+        *(arr + i) = WIRE.read();
+    }
+
+    // if more data is present
+    if (len > separator) {
+        WIRE.beginTransmission(DS1307_ADDRESS);
+        WIRE.write(DS1307_RAM_ADDR + separator);
+        WIRE.endTransmission();
+
+        // read unread data
+        WIRE.requestFrom(DS1307_ADDRESS, len - separator);
+        for (int i = separator; i < len; i++) {
+            *(arr + i) = WIRE.read();
+        }
+    }
+
+    return arr;
+}
+
+void DS1307::putram(const uint8_t* arr, uint8_t len) {
+    // Because Wire's internal buffer only has 32 bytes (BUFFER_LENGTH)
+    // we need to write twice
+    static const uint8_t separator = BUFFER_LENGTH - 1;
+
+    if (len > DS1307_RAMSIZE) {
+        // Limit to avoid undefined operation
+        len = DS1307_RAMSIZE;
+    }
+
+    // how many bytes to write first
+    uint8_t first_wave = max(len, separator);
+
+    WIRE.beginTransmission(DS1307_ADDRESS);
+    WIRE.write(DS1307_RAM_ADDR);
+    for (int i = 0; i < first_wave; i++) {
+        WIRE.write(*(arr + i));
+    }
+    WIRE.endTransmission();
+
+    // if more data is present
+    if (len > separator) {
+        // write unwritten data
+        WIRE.beginTransmission(DS1307_ADDRESS);
+        WIRE.write(DS1307_RAM_ADDR + separator);
+        for (int i = separator; i < len; i++) {
+            WIRE.write(*(arr + i));
+        }
+        WIRE.endTransmission();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

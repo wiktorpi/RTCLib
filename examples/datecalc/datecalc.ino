@@ -3,10 +3,10 @@
 // #include <Wire.h>
 #include <RTClib.h>
 
-// buffer for DateTime.tostr
-char buf[20];
-
 void showDate(const char* txt, const DateTime& dt) {
+  // buffer for DateTime.tostr
+  static char buf[20];
+
   Serial.print(txt);
   Serial.print(' ');
   Serial.print(dt.tostr(buf));
@@ -20,7 +20,7 @@ void showDate(const char* txt, const DateTime& dt) {
   Serial.println();
 }
 
-void setup () {
+void setup() {
   Serial.begin(9600);
 
   DateTime dt0(0, 1, 1, 0, 0, 0);
@@ -54,5 +54,6 @@ void setup () {
   showDate("dt9", dt9);
 }
 
-void loop () {
+void loop() {
+  // do nothing
 }

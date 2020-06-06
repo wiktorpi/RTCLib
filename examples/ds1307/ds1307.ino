@@ -8,7 +8,7 @@ DS1307 rtc;
 // buffer for DateTime.tostr
 char buf[20];
 
-void setup () {
+void setup() {
   Serial.begin(9600);
 #ifdef AVR
   Wire.begin();
@@ -24,7 +24,7 @@ void setup () {
   }
 }
 
-void loop () {
+void loop() {
   DateTime now = rtc.now();
 
   Serial.println(now.tostr(buf));

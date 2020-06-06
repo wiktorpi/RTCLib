@@ -26,7 +26,7 @@ void setup() {
   }
 }
 
-void loop () {
+void loop() {
   DateTime now = rtc.now();
 
   Serial.println(now.tostr(buf));
