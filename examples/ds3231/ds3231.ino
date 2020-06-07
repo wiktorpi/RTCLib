@@ -1,9 +1,8 @@
-// Date and time functions using a DS1307 RTC connected via I2C and Wire lib
+// Example for DS3231 module connected via I2C interface
 
-#include <Wire.h>
 #include <RTClib.h>
 
-DS1307 rtc;
+DS3231 rtc;
 
 // buffer for DateTime.tostr
 char buf[20];
@@ -29,7 +28,7 @@ void loop() {
 
   Serial.println(now.tostr(buf));
 
-  Serial.print(" since midnight 1/1/1970 = ");
+  Serial.print(" since midnight 1970/1/1 = ");
   Serial.print(now.unixtime());
   Serial.print("s = ");
   Serial.print(now.unixtime() / 86400L);
@@ -42,10 +41,11 @@ void loop() {
   Serial.println(future.tostr(buf));
 
   // calculate a date which is 30 days before
-  DateTime past(now - TimeDelta(30 * 86400L));
+  DateTime past(now - 30 * 86400L);
 
   Serial.print(" now - 30d: ");
   Serial.println(past.tostr(buf));
+
   Serial.println();
   delay(3000);
 }
