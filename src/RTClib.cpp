@@ -599,7 +599,7 @@ uint8_t* DS1307::getram(uint8_t* arr, uint8_t len) {
         *(arr + i) = WIRE.read();
     }
 
-    // if more data is present
+    // if more data are present
     if (len > separator) {
         WIRE.beginTransmission(DS1307_ADDRESS);
         WIRE.write(DS1307_RAM_ADDR + separator);
@@ -635,7 +635,7 @@ void DS1307::putram(const uint8_t* arr, uint8_t len) {
     }
     WIRE.endTransmission();
 
-    // if more data is present
+    // if more data are present
     if (len > separator) {
         // write unwritten data
         WIRE.beginTransmission(DS1307_ADDRESS);
