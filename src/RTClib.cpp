@@ -473,7 +473,7 @@ void DS1302::adjust(const DateTime& dt) {
     write(0);
 }
 
-uint8_t DS1302::readram(uint8_t addr) const {
+uint8_t DS1302::readram(uint8_t addr) {
     addr %= DS1302_RAMSIZE;
 
     TransferHelper data_transfer(ce, sck);
@@ -482,7 +482,7 @@ uint8_t DS1302::readram(uint8_t addr) const {
     return read();
 }
 
-void DS1302::writeram(uint8_t addr, uint8_t val) const {
+void DS1302::writeram(uint8_t addr, uint8_t val) {
     addr %= DS1302_RAMSIZE;
 
     TransferHelper data_transfer(ce, sck);
@@ -491,7 +491,7 @@ void DS1302::writeram(uint8_t addr, uint8_t val) const {
     write(val);
 }
 
-uint8_t* DS1302::getram(uint8_t* arr, uint8_t len) const {
+uint8_t* DS1302::getram(uint8_t* arr, uint8_t len) {
     if (len > DS1302_RAMSIZE) {
         // Limit to avoid undefined operation
         len = DS1302_RAMSIZE;
@@ -506,7 +506,7 @@ uint8_t* DS1302::getram(uint8_t* arr, uint8_t len) const {
     return arr;
 }
 
-void DS1302::putram(const uint8_t* arr, uint8_t len) const {
+void DS1302::putram(const uint8_t* arr, uint8_t len) {
     if (len > DS1302_RAMSIZE) {
         // Limit to avoid undefined operation
         len = DS1302_RAMSIZE;

@@ -154,10 +154,10 @@ public:
     uint8_t isrunning();
     DateTime now();
     void adjust(const DateTime& dt);
-    uint8_t readram(uint8_t addr) const;
-    void writeram(uint8_t addr, uint8_t val) const;
-    uint8_t* getram(uint8_t* arr, uint8_t len) const;
-    void putram(const uint8_t* arr, uint8_t len) const;
+    uint8_t readram(uint8_t addr);
+    void writeram(uint8_t addr, uint8_t val);
+    uint8_t* getram(uint8_t* arr, uint8_t len);
+    void putram(const uint8_t* arr, uint8_t len);
 
 protected:
     uint8_t ce, sck, io;
