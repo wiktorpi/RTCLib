@@ -423,8 +423,10 @@ void DS1302::begin() {
     pinMode(io, INPUT);
     write(7, 0);
     uint8_t sec = read(0);
-    sec &= 0x7F;
-    write(0, sec);
+    if (sec & 0x80) {
+        sec &= 0x7F;
+        write(0, sec);
+    }
 }
 
 uint8_t DS1302::read(uint8_t addr) {
