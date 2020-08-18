@@ -118,8 +118,8 @@ DateTime::DateTime(const __FlashStringHelper* date, const __FlashStringHelper* t
     char _time[8];
     memcpy_P(_date, date, 11);
     memcpy_P(_time, time, 8);
-    SetDate(date);
-    SetTime(time);
+    SetDate(_date);
+    SetTime(_time);
 }
 
 DateTime::DateTime(const char* sdate) : DateTime(sdate, sdate + 11) {}
