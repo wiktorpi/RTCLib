@@ -3,6 +3,12 @@
 
 #include "RTClib.h"
 
+#define WIRE Wire
+
+#ifndef BUFFER_LENGTH
+  #define BUFFER_LENGTH 32
+#endif
+
 #define DS1307_ADDRESS            0x68
 #define PCF8563_ADDRESS           0xA3
 #define PCF8583_ADDRESS           0xA0

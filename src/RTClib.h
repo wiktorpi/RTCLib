@@ -3,25 +3,13 @@
 
 #pragma once
 
-#include <Wire.h>
-
 #if (ARDUINO >= 100)
   #include <Arduino.h>
 #else
   #include <WProgram.h>
 #endif
 
-#ifdef __AVR__
-  #include <avr/pgmspace.h>
-  #define WIRE Wire
-#elif defined ESP8266
-  #include <pgmspace.h>
-  #define WIRE Wire
-#else
-  #define PROGMEM
-  #define pgm_read_byte(addr) (*(const unsigned char*)(addr))
-  #define WIRE Wire1
-#endif
+#include <Wire.h>
 
 #define DS1302_RAMSIZE 31 // bytes
 #define DS1307_RAMSIZE 56 // bytes
