@@ -658,6 +658,7 @@ void DS1307::putram(const uint8_t* arr, uint8_t len) {
 // DS3231 implementation
 uint8_t DS3231::begin() {
     write(DS3231_CONTROL_ADDR, DS3231_INTC);
+    return 0;
 }
 
 uint8_t DS3231::read(uint8_t addr) {

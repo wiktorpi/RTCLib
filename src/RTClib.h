@@ -9,7 +9,21 @@
   #include <WProgram.h>
 #endif
 
-#include <Wire.h>
+#ifdef __AVR__
+  #include <avr/pgmspace.h>
+  #define WIRE Wire
+#elif defined ESP8266
+  #include <pgmspace.h>
+  #define WIRE Wire
+#elif defined ARDUINO_RASPBERRY_PI_PICO
+  #include <pgmspace.h>
+  #define WIRE Wire
+  #define BUFFER_LENGTH WIRE_BUFFER_SIZE
+#else
+  #define PROGMEM
+  #define pgm_read_byte(addr) (*(const unsigned char*)(addr))
+  #define WIRE Wire1
+#endif
 
 #define DS1302_RAMSIZE 31 // bytes
 #define DS1307_RAMSIZE 56 // bytes
