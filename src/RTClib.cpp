@@ -414,7 +414,15 @@ DS1302::DS1302(uint8_t ce_pin, uint8_t sck_pin, uint8_t io_pin) {
 
 uint8_t DS1302::read() {
     pinMode(io, INPUT);
-    return shiftIn(io, sck, LSBFIRST);;
+    // FIXME: this works while shiftIn() don't - Issue #31
+    uint8_t value = 0;
+    for (uint8_t i = 0; i < 8; ++i) {
+        uint8_t bit = digitalRead(io);
+        value |= (bit << i);  // Bits are read LSB first.
+        digitalWrite(sck, HIGH);
+        digitalWrite(sck, LOW);
+    }
+    return value;
 }
 
 void DS1302::write(uint8_t val) {
