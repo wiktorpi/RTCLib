@@ -3,7 +3,7 @@
 
 #include "RTClib.h"
 
-#define WIRE Wire
+#define RTCLIB_WIRE Wire
 
 #ifndef BUFFER_LENGTH
   #define BUFFER_LENGTH 32
@@ -74,19 +74,19 @@ static uint8_t conv2d(const char* p) {
 }
 
 static uint8_t _read(int dev, uint8_t addr) {
-    WIRE.beginTransmission(dev);
-    WIRE.write(addr);
-    WIRE.endTransmission();
-    WIRE.requestFrom(dev, 1);
-    uint8_t s = WIRE.read();
+    RTCLIB_WIRE.beginTransmission(dev);
+    RTCLIB_WIRE.write(addr);
+    RTCLIB_WIRE.endTransmission();
+    RTCLIB_WIRE.requestFrom(dev, 1);
+    uint8_t s = RTCLIB_WIRE.read();
     return s;
 }
 
 static void _write(int dev, uint8_t addr, uint8_t val) {
-    WIRE.beginTransmission(dev);
-    WIRE.write(addr);
-    WIRE.write(val);
-    WIRE.endTransmission();
+    RTCLIB_WIRE.beginTransmission(dev);
+    RTCLIB_WIRE.write(addr);
+    RTCLIB_WIRE.write(val);
+    RTCLIB_WIRE.endTransmission();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -554,32 +554,32 @@ uint8_t DS1307::isrunning() {
 }
 
 void DS1307::adjust(const DateTime& dt) {
-    WIRE.beginTransmission(DS1307_ADDRESS);
-    WIRE.write(0);
-    WIRE.write(bin2bcd(dt.second()));
-    WIRE.write(bin2bcd(dt.minute()));
-    WIRE.write(bin2bcd(dt.hour()));
-    WIRE.write(bin2bcd(dt.dayOfWeek()));
-    WIRE.write(bin2bcd(dt.day()));
-    WIRE.write(bin2bcd(dt.month()));
-    WIRE.write(bin2bcd(dt.year() - 2000));
-    WIRE.write(0);
-    WIRE.endTransmission();
+    RTCLIB_WIRE.beginTransmission(DS1307_ADDRESS);
+    RTCLIB_WIRE.write(0);
+    RTCLIB_WIRE.write(bin2bcd(dt.second()));
+    RTCLIB_WIRE.write(bin2bcd(dt.minute()));
+    RTCLIB_WIRE.write(bin2bcd(dt.hour()));
+    RTCLIB_WIRE.write(bin2bcd(dt.dayOfWeek()));
+    RTCLIB_WIRE.write(bin2bcd(dt.day()));
+    RTCLIB_WIRE.write(bin2bcd(dt.month()));
+    RTCLIB_WIRE.write(bin2bcd(dt.year() - 2000));
+    RTCLIB_WIRE.write(0);
+    RTCLIB_WIRE.endTransmission();
 }
 
 DateTime DS1307::now() {
-    WIRE.beginTransmission(DS1307_ADDRESS);
-    WIRE.write(0);
-    WIRE.endTransmission();
+    RTCLIB_WIRE.beginTransmission(DS1307_ADDRESS);
+    RTCLIB_WIRE.write(0);
+    RTCLIB_WIRE.endTransmission();
 
-    WIRE.requestFrom(DS1307_ADDRESS, 7);
-    uint8_t ss = bcd2bin(WIRE.read() & 0x7F);
-    uint8_t mm = bcd2bin(WIRE.read());
-    uint8_t hh = bcd2bin(WIRE.read());
-    WIRE.read(); // ignore dayOfWeek register
-    uint8_t d = bcd2bin(WIRE.read());
-    uint8_t m = bcd2bin(WIRE.read());
-    uint8_t yOff = bcd2bin(WIRE.read());
+    RTCLIB_WIRE.requestFrom(DS1307_ADDRESS, 7);
+    uint8_t ss = bcd2bin(RTCLIB_WIRE.read() & 0x7F);
+    uint8_t mm = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t hh = bcd2bin(RTCLIB_WIRE.read());
+    RTCLIB_WIRE.read(); // ignore dayOfWeek register
+    uint8_t d = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t m = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t yOff = bcd2bin(RTCLIB_WIRE.read());
 
     return DateTime(yOff + 2000, m, d, hh, mm, ss);
 }
@@ -605,25 +605,25 @@ uint8_t* DS1307::getram(uint8_t* arr, uint8_t len) {
     // how many bytes to write first
     uint8_t first_wave = max(len, separator);
 
-    WIRE.beginTransmission(DS1307_ADDRESS);
-    WIRE.write(DS1307_RAM_ADDR);
-    WIRE.endTransmission();
+    RTCLIB_WIRE.beginTransmission(DS1307_ADDRESS);
+    RTCLIB_WIRE.write(DS1307_RAM_ADDR);
+    RTCLIB_WIRE.endTransmission();
 
-    WIRE.requestFrom(DS1307_ADDRESS, (int)first_wave);
+    RTCLIB_WIRE.requestFrom(DS1307_ADDRESS, (int)first_wave);
     for(int i = 0; i < first_wave; i++) {
-        arr[i] = WIRE.read();
+        arr[i] = RTCLIB_WIRE.read();
     }
 
     // if more data are present
     if (len > separator) {
-        WIRE.beginTransmission(DS1307_ADDRESS);
-        WIRE.write(DS1307_RAM_ADDR + separator);
-        WIRE.endTransmission();
+        RTCLIB_WIRE.beginTransmission(DS1307_ADDRESS);
+        RTCLIB_WIRE.write(DS1307_RAM_ADDR + separator);
+        RTCLIB_WIRE.endTransmission();
 
         // read unread data
-        WIRE.requestFrom(DS1307_ADDRESS, len - separator);
+        RTCLIB_WIRE.requestFrom(DS1307_ADDRESS, len - separator);
         for (int i = separator; i < len; i++) {
-            arr[i] = WIRE.read();
+            arr[i] = RTCLIB_WIRE.read();
         }
     }
 
@@ -643,22 +643,22 @@ void DS1307::putram(const uint8_t* arr, uint8_t len) {
     // how many bytes to write first
     uint8_t first_wave = max(len, separator);
 
-    WIRE.beginTransmission(DS1307_ADDRESS);
-    WIRE.write(DS1307_RAM_ADDR);
+    RTCLIB_WIRE.beginTransmission(DS1307_ADDRESS);
+    RTCLIB_WIRE.write(DS1307_RAM_ADDR);
     for (int i = 0; i < first_wave; i++) {
-        WIRE.write(*(arr + i));
+        RTCLIB_WIRE.write(*(arr + i));
     }
-    WIRE.endTransmission();
+    RTCLIB_WIRE.endTransmission();
 
     // if more data are present
     if (len > separator) {
         // write unwritten data
-        WIRE.beginTransmission(DS1307_ADDRESS);
-        WIRE.write(DS1307_RAM_ADDR + separator);
+        RTCLIB_WIRE.beginTransmission(DS1307_ADDRESS);
+        RTCLIB_WIRE.write(DS1307_RAM_ADDR + separator);
         for (int i = separator; i < len; i++) {
-            WIRE.write(*(arr + i));
+            RTCLIB_WIRE.write(*(arr + i));
         }
-        WIRE.endTransmission();
+        RTCLIB_WIRE.endTransmission();
     }
 }
 
@@ -693,31 +693,31 @@ void DS3231::adjust(const DateTime& dt) {
         cen = 0;
     }
 
-    WIRE.beginTransmission(DS3231_ADDRESS);
-    WIRE.write(DS3231_TIME_ADDR);
-    WIRE.write(bin2bcd(dt.second()));
-    WIRE.write(bin2bcd(dt.minute()));
-    WIRE.write(bin2bcd(dt.hour()));
-    WIRE.write(bin2bcd(0));
-    WIRE.write(bin2bcd(dt.day()));
-    WIRE.write(bin2bcd(dt.month())+ cen);
-    WIRE.write(bin2bcd(year));
-    WIRE.endTransmission();
+    RTCLIB_WIRE.beginTransmission(DS3231_ADDRESS);
+    RTCLIB_WIRE.write(DS3231_TIME_ADDR);
+    RTCLIB_WIRE.write(bin2bcd(dt.second()));
+    RTCLIB_WIRE.write(bin2bcd(dt.minute()));
+    RTCLIB_WIRE.write(bin2bcd(dt.hour()));
+    RTCLIB_WIRE.write(bin2bcd(0));
+    RTCLIB_WIRE.write(bin2bcd(dt.day()));
+    RTCLIB_WIRE.write(bin2bcd(dt.month())+ cen);
+    RTCLIB_WIRE.write(bin2bcd(year));
+    RTCLIB_WIRE.endTransmission();
 }
 
 DateTime DS3231::now() {
-    WIRE.beginTransmission(DS3231_ADDRESS);
-    WIRE.write(DS3231_TIME_ADDR);
-    WIRE.endTransmission();
-    WIRE.requestFrom(DS3231_ADDRESS, 7);
-    uint8_t ss = bcd2bin(WIRE.read() & 0x7F);
-    uint8_t mm = bcd2bin(WIRE.read());
-    uint8_t hh = bcd2bin(WIRE.read());
-    WIRE.read();
-    uint8_t d = bcd2bin(WIRE.read());
-    uint8_t cen = WIRE.read();
+    RTCLIB_WIRE.beginTransmission(DS3231_ADDRESS);
+    RTCLIB_WIRE.write(DS3231_TIME_ADDR);
+    RTCLIB_WIRE.endTransmission();
+    RTCLIB_WIRE.requestFrom(DS3231_ADDRESS, 7);
+    uint8_t ss = bcd2bin(RTCLIB_WIRE.read() & 0x7F);
+    uint8_t mm = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t hh = bcd2bin(RTCLIB_WIRE.read());
+    RTCLIB_WIRE.read();
+    uint8_t d = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t cen = RTCLIB_WIRE.read();
     uint8_t m = bcd2bin(cen & 0x1F);
-    uint16_t y = bcd2bin(WIRE.read());
+    uint16_t y = bcd2bin(RTCLIB_WIRE.read());
     if ((cen & 0x80) >> 7 == 1) {
         y += 2000;
     }
@@ -729,12 +729,12 @@ DateTime DS3231::now() {
 
 double DS3231::getTemp() {
     double temp;
-    WIRE.beginTransmission(DS3231_ADDRESS);
-    WIRE.write(DS3231_TEMPERATURE_ADDR);
-    WIRE.endTransmission();
-    WIRE.requestFrom(DS3231_ADDRESS, 2);
-    temp = (double) WIRE.read();
-    temp += 0.25 * (WIRE.read() >> 6);
+    RTCLIB_WIRE.beginTransmission(DS3231_ADDRESS);
+    RTCLIB_WIRE.write(DS3231_TEMPERATURE_ADDR);
+    RTCLIB_WIRE.endTransmission();
+    RTCLIB_WIRE.requestFrom(DS3231_ADDRESS, 2);
+    temp = (double) RTCLIB_WIRE.read();
+    temp += 0.25 * (RTCLIB_WIRE.read() >> 6);
     return temp;
 }
 
@@ -756,58 +756,58 @@ uint8_t PCF8583::begin() {
 }
 
 DateTime PCF8583::now() {
-    Wire.beginTransmission(address);
-    Wire.write(0xC0); // stop counting, don't mask
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0xC0); // stop counting, don't mask
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.beginTransmission(address);
-    Wire.write(0x02);
-    Wire.endTransmission();
-    Wire.requestFrom(address, 5);
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x02);
+    RTCLIB_WIRE.endTransmission();
+    RTCLIB_WIRE.requestFrom(address, 5);
 
-    uint8_t second = bcd2bin(Wire.read());
-    uint8_t minute = bcd2bin(Wire.read());
-    uint8_t hour = bcd2bin(Wire.read());
-    uint8_t incoming = Wire.read(); // year/date counter
+    uint8_t second = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t minute = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t hour = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t incoming = RTCLIB_WIRE.read(); // year/date counter
     uint8_t day = bcd2bin(incoming & 0x3f);
     uint8_t year = (int)((incoming >> 6) & 0x03); // it will only hold 4 years...
-    incoming = Wire.read();
+    incoming = RTCLIB_WIRE.read();
     uint8_t month = bcd2bin(incoming & 0x1f);
     // uint8_t dow = incoming >> 5; // unused
 
     // but that's not all - we need to find out what the base year is
     // so we can add the 2 bits we got above and find the real year
-    Wire.beginTransmission(address);
-    Wire.write(0x10);
-    Wire.endTransmission();
-    Wire.requestFrom(address, 2);
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x10);
+    RTCLIB_WIRE.endTransmission();
+    RTCLIB_WIRE.requestFrom(address, 2);
 
-    uint8_t year_base = Wire.read();
+    uint8_t year_base = RTCLIB_WIRE.read();
     year_base <<= 8;
-    year_base |= Wire.read();
+    year_base |= RTCLIB_WIRE.read();
     year += year_base;
     return DateTime(year, month, day, hour, minute, second);
 }
 
 void PCF8583::adjust(const DateTime& dt) {
-    Wire.beginTransmission(address);
-    Wire.write(0xC0); // stop counting, don't mask
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0xC0); // stop counting, don't mask
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.beginTransmission(address);
-    Wire.write(0x02);
-    Wire.write(bin2bcd(dt.second()));
-    Wire.write(bin2bcd(dt.minute()));
-    Wire.write(bin2bcd(dt.hour()));
-    Wire.write(((uint8_t)(dt.year() - 2000) << 6) | bin2bcd(dt.day()));
-    Wire.write((dt.dayOfWeek() << 5) | (bin2bcd(dt.month()) & 0x1f));
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x02);
+    RTCLIB_WIRE.write(bin2bcd(dt.second()));
+    RTCLIB_WIRE.write(bin2bcd(dt.minute()));
+    RTCLIB_WIRE.write(bin2bcd(dt.hour()));
+    RTCLIB_WIRE.write(((uint8_t)(dt.year() - 2000) << 6) | bin2bcd(dt.day()));
+    RTCLIB_WIRE.write((dt.dayOfWeek() << 5) | (bin2bcd(dt.month()) & 0x1f));
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.beginTransmission(address);
-    Wire.write(0x10);
-    Wire.write(2000 >> 8);
-    Wire.write(2000 & 0x00ff);
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x10);
+    RTCLIB_WIRE.write(2000 >> 8);
+    RTCLIB_WIRE.write(2000 & 0x00ff);
+    RTCLIB_WIRE.endTransmission();
 
     begin(); // reset the control/status register to 0x04
 }
@@ -819,48 +819,48 @@ uint8_t PCF8583::isrunning() {
 
 // Get the alarm at 0x09 adress
 DateTime PCF8583::get_alarm() {
-    Wire.beginTransmission(address);
-    Wire.write(0x0A); // Set the register pointer to (0x0A)
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x0A); // Set the register pointer to (0x0A)
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.requestFrom(address, 4); // Read 4 values
+    RTCLIB_WIRE.requestFrom(address, 4); // Read 4 values
 
-    uint8_t second = bcd2bin(Wire.read());
-    uint8_t minute = bcd2bin(Wire.read());
-    uint8_t hour = bcd2bin(Wire.read());
+    uint8_t second = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t minute = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t hour = bcd2bin(RTCLIB_WIRE.read());
 
-    Wire.beginTransmission(address);
-    Wire.write(0x0E);
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x0E);
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.requestFrom(address, 1); // Read weekday value
+    RTCLIB_WIRE.requestFrom(address, 1); // Read weekday value
 
-    uint8_t day = bcd2bin(Wire.read());
+    uint8_t day = bcd2bin(RTCLIB_WIRE.read());
     return DateTime(2000, 01, day, hour, minute, second);
 }
 
 // Set a daily alarm
 void PCF8583::set_alarm(const DateTime& dt) {
-    Wire.beginTransmission(address);
-    Wire.write(0x08);
-    Wire.write(0x90); // daily alarm set
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x08);
+    RTCLIB_WIRE.write(0x90); // daily alarm set
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.beginTransmission(address);
-    Wire.write(0x09); // Set the register pointer to (0x09)
-    Wire.write(0x00); // Set 00 at milisec
-    Wire.write(bin2bcd(dt.second()));
-    Wire.write(bin2bcd(dt.minute()));
-    Wire.write(bin2bcd(dt.hour()));
-    Wire.write(0x00); // Set 00 at day
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x09); // Set the register pointer to (0x09)
+    RTCLIB_WIRE.write(0x00); // Set 00 at milisec
+    RTCLIB_WIRE.write(bin2bcd(dt.second()));
+    RTCLIB_WIRE.write(bin2bcd(dt.minute()));
+    RTCLIB_WIRE.write(bin2bcd(dt.hour()));
+    RTCLIB_WIRE.write(0x00); // Set 00 at day
+    RTCLIB_WIRE.endTransmission();
 }
 
 void PCF8583::off_alarm() {
-    Wire.beginTransmission(address);
-    Wire.write(0x08);
-    Wire.write(0x00); // off alarm set
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x08);
+    RTCLIB_WIRE.write(0x00); // off alarm set
+    RTCLIB_WIRE.endTransmission();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -876,86 +876,86 @@ PCF8563::PCF8563() {
 
 // initialization
 uint8_t PCF8563::begin() {
-    Wire.begin();
-    Wire.beginTransmission(address);
-    Wire.write(0x00); // Start address
-    Wire.write(0); // Control and status 1
-    Wire.write(0); // Control and status 2
-    return Wire.endTransmission();
+    RTCLIB_WIRE.begin();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x00); // Start address
+    RTCLIB_WIRE.write(0); // Control and status 1
+    RTCLIB_WIRE.write(0); // Control and status 2
+    return RTCLIB_WIRE.endTransmission();
 }
 
 DateTime PCF8563::now() {
-    Wire.beginTransmission(address);
-    Wire.write(0x00);
-    Wire.endTransmission();
-    Wire.requestFrom(address, 9);
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x00);
+    RTCLIB_WIRE.endTransmission();
+    RTCLIB_WIRE.requestFrom(address, 9);
 
-    status1 = Wire.read();
-    status2 = Wire.read();
-    uint8_t second = bcd2bin(Wire.read() & 0x7F);
-    uint8_t minute = bcd2bin(Wire.read() & 0x7F);
-    uint8_t hour = bcd2bin(Wire.read() & 0x3F);
-    uint8_t day = bcd2bin(Wire.read() & 0x3F);
-    // uint8_t wekday = Wire.read() & 0x07; // unused year/date counter
-    uint8_t month = Wire.read();
+    status1 = RTCLIB_WIRE.read();
+    status2 = RTCLIB_WIRE.read();
+    uint8_t second = bcd2bin(RTCLIB_WIRE.read() & 0x7F);
+    uint8_t minute = bcd2bin(RTCLIB_WIRE.read() & 0x7F);
+    uint8_t hour = bcd2bin(RTCLIB_WIRE.read() & 0x3F);
+    uint8_t day = bcd2bin(RTCLIB_WIRE.read() & 0x3F);
+    RTCLIB_WIRE.read(); // year/date counter
+    uint8_t month = RTCLIB_WIRE.read();
     // uint8_t century = month >> 7; // unused
     month = bcd2bin(month & 0x1F);
-    uint8_t year = bcd2bin(Wire.read()); // it will only hold 4 years...
+    uint8_t year = bcd2bin(RTCLIB_WIRE.read()); // it will only hold 4 years...
     return DateTime(year, month, day, hour, minute, second);
 }
 
 void PCF8563::adjust(const DateTime& dt) {
-    Wire.beginTransmission(address);
-    Wire.write(0x02);                       // Start address
-    Wire.write(bin2bcd(dt.second()));       // Second (0-59)
-    Wire.write(bin2bcd(dt.minute()));       // Minute (0-59)
-    Wire.write(bin2bcd(dt.hour()));         // Hour (0-23)
-    Wire.write(bin2bcd(dt.day()));          // Day (1-31)
-    Wire.write(bin2bcd(dt.dayOfWeek())); // Weekday (0-6 = Sunday-Saturday)
-    Wire.write(bin2bcd(dt.month()) | 0x80); // Month (1-12, century bit (bit 7) = 1)
-    Wire.write(bin2bcd(dt.year() % 100));   // Year (00-99)
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x02);                       // Start address
+    RTCLIB_WIRE.write(bin2bcd(dt.second()));       // Second (0-59)
+    RTCLIB_WIRE.write(bin2bcd(dt.minute()));       // Minute (0-59)
+    RTCLIB_WIRE.write(bin2bcd(dt.hour()));         // Hour (0-23)
+    RTCLIB_WIRE.write(bin2bcd(dt.day()));          // Day (1-31)
+    RTCLIB_WIRE.write(bin2bcd(dt.dayOfWeek())); // Weekday (0-6 = Sunday-Saturday)
+    RTCLIB_WIRE.write(bin2bcd(dt.month()) | 0x80); // Month (1-12, century bit (bit 7) = 1)
+    RTCLIB_WIRE.write(bin2bcd(dt.year() % 100));   // Year (00-99)
+    RTCLIB_WIRE.endTransmission();
 
     begin(); // re set the control/status register to 0x04
 }
 
 uint8_t PCF8563::isrunning() {
-    Wire.beginTransmission(address);
-    Wire.write(0);
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0);
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.requestFrom(address, 2);
+    RTCLIB_WIRE.requestFrom(address, 2);
 
-    status1 = Wire.read();
-    status2 = Wire.read();
+    status1 = RTCLIB_WIRE.read();
+    status2 = RTCLIB_WIRE.read();
     return !(bitRead(status1, 5));
 }
 
 uint8_t PCF8563::isvalid() {
-    Wire.beginTransmission(address);
-    Wire.write(0);
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0);
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.requestFrom(address, 3);
+    RTCLIB_WIRE.requestFrom(address, 3);
 
-    status1 = Wire.read();
-    status2 = Wire.read();
-    uint8_t VL_seconds = Wire.read();
+    status1 = RTCLIB_WIRE.read();
+    status2 = RTCLIB_WIRE.read();
+    uint8_t VL_seconds = RTCLIB_WIRE.read();
     return !(bitRead(VL_seconds, 7));
 }
 
 // Get the alarm at 0x09 adress
 DateTime PCF8563::get_alarm() {
-    Wire.beginTransmission(address);
-    Wire.write(0x09); // Set the register pointer to (0x0A)
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x09); // Set the register pointer to (0x0A)
+    RTCLIB_WIRE.endTransmission();
 
-    Wire.requestFrom(address, 4); // Read 4 values
+    RTCLIB_WIRE.requestFrom(address, 4); // Read 4 values
 
-    uint8_t minute = bcd2bin(Wire.read());
-    uint8_t hour = bcd2bin(Wire.read());
-    uint8_t day = bcd2bin(Wire.read());
-    uint8_t wday = bcd2bin(Wire.read());
+    uint8_t minute = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t hour = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t day = bcd2bin(RTCLIB_WIRE.read());
+    uint8_t wday = bcd2bin(RTCLIB_WIRE.read());
     return DateTime(0, wday, day, hour, minute, 0);
 }
 
@@ -978,22 +978,22 @@ void PCF8563::set_alarm(const DateTime& dt, alarm_flags flags) {
     if (!flags.wday)
         dayOfWeek |= PCF8563_ALARM_REG_OFF;
 
-    Wire.beginTransmission(address);
-    Wire.write(0x09); // Set the register pointer to (0x09)
-    Wire.write(minute);
-    Wire.write(hour);
-    Wire.write(day);
-    Wire.write(dayOfWeek);
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x09); // Set the register pointer to (0x09)
+    RTCLIB_WIRE.write(minute);
+    RTCLIB_WIRE.write(hour);
+    RTCLIB_WIRE.write(day);
+    RTCLIB_WIRE.write(dayOfWeek);
+    RTCLIB_WIRE.endTransmission();
 }
 
 void PCF8563::off_alarm() {
     // set status2 AF val to zero to reset alarm
     status2 &= ~PCF8563_ALARM_AF;
-    Wire.beginTransmission(address);
-    Wire.write(0x01);
-    Wire.write(status2);
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x01);
+    RTCLIB_WIRE.write(status2);
+    RTCLIB_WIRE.endTransmission();
 }
 
 void PCF8563::on_alarm() {
@@ -1001,10 +1001,10 @@ void PCF8563::on_alarm() {
     status2 &= ~PCF8563_ALARM_AF;
     // enable the interrupt
     status2 |= PCF8563_ALARM_AIE;
-    Wire.beginTransmission(address); // Issue I2C start signal
-    Wire.write(0x01);
-    Wire.write(status2);
-    Wire.endTransmission();
+    RTCLIB_WIRE.beginTransmission(address); // Issue I2C start signal
+    RTCLIB_WIRE.write(0x01);
+    RTCLIB_WIRE.write(status2);
+    RTCLIB_WIRE.endTransmission();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
