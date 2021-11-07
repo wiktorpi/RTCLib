@@ -9,6 +9,8 @@
   #include <WProgram.h>
 #endif
 
+#include <Wire.h>
+
 #ifdef __AVR__
   #include <avr/pgmspace.h>
   #define WIRE Wire
