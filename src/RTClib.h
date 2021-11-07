@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <Wire.h>
-
 #if (ARDUINO >= 100)
   #include <Arduino.h>
 #else
