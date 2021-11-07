@@ -62,7 +62,7 @@ static uint16_t date2days(uint16_t y, uint8_t m, uint8_t d) {
     return days + 365 * y + (y + 3) / 4 - 1;
 }
 
-static long time2long(uint16_t days, uint8_t h, uint8_t m, uint8_t s) {
+static inline long time2long(uint16_t days, uint8_t h, uint8_t m, uint8_t s) {
     return ((days * 24L + h) * 60 + m) * 60 + s;
 }
 
@@ -249,7 +249,7 @@ void DateTime::setunixtime(uint32_t t) {
     uint8_t leap;
     for (yOff = 0; ;yOff++) {
         leap = yOff % 4 == 0;
-        if (days < 365 + leap)
+        if (days < 365u + leap)
             break;
         days -= 365 + leap;
     }
@@ -276,7 +276,7 @@ uint32_t DateTime::unixtime() const {
 
 // TODO follow strftime format, could be difficult
 char* DateTime::format(char* ret) {
-    for (int i = 0; i < strlen(ret); i++) {
+    for (size_t i = 0; i < strlen(ret); i++) {
         if (ret[i] == 'h' && ret[i + 1] == 'h') {
             ret[i] = '0' + hh / 10;
             ret[i + 1] = '0' + hh % 10;
@@ -414,7 +414,15 @@ DS1302::DS1302(uint8_t ce_pin, uint8_t sck_pin, uint8_t io_pin) {
 
 uint8_t DS1302::read() {
     pinMode(io, INPUT);
-    return shiftIn(io, sck, LSBFIRST);;
+    // FIXME: this works while shiftIn() don't - Issue #31
+    uint8_t value = 0;
+    for (uint8_t i = 0; i < 8; ++i) {
+        uint8_t bit = digitalRead(io);
+        value |= (bit << i);  // Bits are read LSB first.
+        digitalWrite(sck, HIGH);
+        digitalWrite(sck, LOW);
+    }
+    return value;
 }
 
 void DS1302::write(uint8_t val) {
@@ -587,7 +595,7 @@ void DS1307::writeram(uint8_t addr, uint8_t val) {
 uint8_t* DS1307::getram(uint8_t* arr, uint8_t len) {
     // Because Wire's internal buffer only has 32 bytes (BUFFER_LENGTH)
     // we need to read twice
-    static const uint8_t separator = BUFFER_LENGTH - 1;
+    const uint8_t separator = BUFFER_LENGTH - 1;
 
     if (len > DS1307_RAMSIZE) {
         // Limit to avoid undefined operation
@@ -601,9 +609,9 @@ uint8_t* DS1307::getram(uint8_t* arr, uint8_t len) {
     WIRE.write(DS1307_RAM_ADDR);
     WIRE.endTransmission();
 
-    WIRE.requestFrom(DS1307_ADDRESS, first_wave);
+    WIRE.requestFrom(DS1307_ADDRESS, (int)first_wave);
     for(int i = 0; i < first_wave; i++) {
-        *(arr + i) = WIRE.read();
+        arr[i] = WIRE.read();
     }
 
     // if more data are present
@@ -615,7 +623,7 @@ uint8_t* DS1307::getram(uint8_t* arr, uint8_t len) {
         // read unread data
         WIRE.requestFrom(DS1307_ADDRESS, len - separator);
         for (int i = separator; i < len; i++) {
-            *(arr + i) = WIRE.read();
+            arr[i] = WIRE.read();
         }
     }
 
@@ -625,7 +633,7 @@ uint8_t* DS1307::getram(uint8_t* arr, uint8_t len) {
 void DS1307::putram(const uint8_t* arr, uint8_t len) {
     // Because Wire's internal buffer only has 32 bytes (BUFFER_LENGTH)
     // we need to write twice
-    static const uint8_t separator = BUFFER_LENGTH - 1;
+    const uint8_t separator = BUFFER_LENGTH - 1;
 
     if (len > DS1307_RAMSIZE) {
         // Limit to avoid undefined operation
@@ -765,7 +773,7 @@ DateTime PCF8583::now() {
     uint8_t year = (int)((incoming >> 6) & 0x03); // it will only hold 4 years...
     incoming = Wire.read();
     uint8_t month = bcd2bin(incoming & 0x1f);
-    uint8_t dow = incoming >> 5;
+    // uint8_t dow = incoming >> 5; // unused
 
     // but that's not all - we need to find out what the base year is
     // so we can add the 2 bits we got above and find the real year
@@ -888,9 +896,9 @@ DateTime PCF8563::now() {
     uint8_t minute = bcd2bin(Wire.read() & 0x7F);
     uint8_t hour = bcd2bin(Wire.read() & 0x3F);
     uint8_t day = bcd2bin(Wire.read() & 0x3F);
-    uint8_t wekday = Wire.read() & 0x07; // year/date counter
+    // uint8_t wekday = Wire.read() & 0x07; // unused year/date counter
     uint8_t month = Wire.read();
-    uint8_t century = month >> 7;
+    // uint8_t century = month >> 7; // unused
     month = bcd2bin(month & 0x1F);
     uint8_t year = bcd2bin(Wire.read()); // it will only hold 4 years...
     return DateTime(year, month, day, hour, minute, second);
