@@ -19,6 +19,19 @@
 // optional val for no alarm setting
 #define PCF8563_NO_ALARM          0x99
 
+// timer registers
+#define PCF8563_TIMER_CTRL_REG    0x0E
+#define PCF8563_TIMER_REG         0x0F
+#define PCF8563_TIMER_TF          0x04
+#define PCF8563_TIMER_TIE         0x01
+
+// timer setting bits
+#define PCF8563_TIMER_TE          0x80
+#define PCF8563_TIMER_4KHZ        0x00
+#define PCF8563_TIMER_64HZ        0x01
+#define PCF8563_TIMER_1HZ         0x02
+#define PCF8563_TIMER_1MIN        0x03
+
 // i2c slave address of the DS3231 chip
 #define DS3231_ADDRESS            0x68
 
@@ -1005,6 +1018,57 @@ void PCF8563::on_alarm() {
     RTCLIB_WIRE.write(0x01);
     RTCLIB_WIRE.write(status2);
     RTCLIB_WIRE.endTransmission();
+}
+
+void PCF8563::set_timer_sec(uint8_t seconds) {
+    uint8_t timer_setup = 0x00;
+    timer_setup |= PCF8563_TIMER_TE;
+    timer_setup |= PCF8563_TIMER_1HZ;
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(PCF8563_TIMER_CTRL_REG);
+    RTCLIB_WIRE.write(timer_setup);
+    RTCLIB_WIRE.write(seconds);
+    RTCLIB_WIRE.endTransmission();
+}
+
+void PCF8563::set_timer_min(uint8_t timer) {
+    uint8_t timer_setup = 0x00;
+    timer_setup |= PCF8563_TIMER_TE;
+    timer_setup |= PCF8563_TIMER_1MIN;
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(PCF8563_TIMER_CTRL_REG);
+    RTCLIB_WIRE.write(timer_setup);
+    RTCLIB_WIRE.write(timer);
+    RTCLIB_WIRE.endTransmission();
+}
+
+void PCF8563::off_timer() {
+    status2 &= ~PCF8563_TIMER_TF;
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x01);
+    RTCLIB_WIRE.write(status2);
+    RTCLIB_WIRE.endTransmission();
+}
+
+void PCF8563::on_timer() {
+    status2 &= ~PCF8563_TIMER_TF;
+    status2 |= PCF8563_TIMER_TIE;
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(0x01);
+    RTCLIB_WIRE.write(status2);
+    RTCLIB_WIRE.endTransmission();
+}
+
+uint8_t PCF8563::get_timer(){
+    return get_register(PCF8563_TIMER_REG);
+}
+
+uint8_t PCF8563::get_register(uint8_t reg) {
+    RTCLIB_WIRE.beginTransmission(address);
+    RTCLIB_WIRE.write(reg);
+    RTCLIB_WIRE.endTransmission();
+    RTCLIB_WIRE.requestFrom(address, 1);
+    return RTCLIB_WIRE.read();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

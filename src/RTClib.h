@@ -226,6 +226,12 @@ public:
     void on_alarm();
     DateTime get_alarm();
     void set_alarm(const DateTime& dt, alarm_flags flags);
+    void off_timer();
+    void on_timer();
+    uint8_t get_timer();
+    void set_timer_sec(uint8_t seconds);
+    void set_timer_min(uint8_t seconds);
+    uint8_t get_register(uint8_t addr);
 };
 
 // RTC using the internal millis() clock, has to be initialized before use
